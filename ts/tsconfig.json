@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es2020",
+    "target": "es2022",
     "lib": ["es2020"],
-    "module": "commonjs",
+    "module": "nodeNext",
+    "moduleResolution": "nodeNext",
     "rootDir": "./",
-    "resolveJsonModule": true,
     "outDir": "./dist",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
