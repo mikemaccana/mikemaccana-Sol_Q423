@@ -74,5 +74,5 @@ let result = await tx.sendAndConfirm(umi);
 const signature = base58.deserialize(result.signature);
 
 console.log(
-  `Succesfully Minted!. Transaction Here: https://explorer.solana.com/tx/${tx}?cluster=devnet`
+  `Succesfully Minted!. Transaction Here: https://explorer.solana.com/tx/${signature}?cluster=devnet`
 );
