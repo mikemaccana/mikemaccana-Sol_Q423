@@ -3,29 +3,38 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "airdrop_to_wallet": "ts-node ./tools/airdrop_to_wallet.ts",
-    "base58_to_wallet": "ts-node ./tools/base58_to_wallet.ts",
-    "wallet_to_base58": "ts-node ./tools/wallet_to_base58.ts",
-    "keygen": "ts-node ./prereq/keygen.ts",
-    "airdrop": "ts-node ./prereq/airdrop.ts",
-    "transfer": "ts-node ./prereq/transfer.ts",
-    "enroll": "ts-node ./prereq/enroll.ts",
+    "airdrop_to_wallet": "npx esrun ./tools/airdrop_to_wallet.ts",
+    "base58_to_wallet": "npx esrun ./tools/base58_to_wallet.ts",
+    "wallet_to_base58": "npx esrun ./tools/wallet_to_base58.ts",
+    "keygen": "npx esrun ./prereq/keygen.ts",
+    "airdrop": "npx esrun ./prereq/airdrop.ts",
+    "transfer": "npx esrun ./prereq/transfer.ts",
+    "enroll": "npx esrun ./prereq/enroll.ts",
     "spl_init": "npx esrun ./cluster1/spl_init.ts",
     "spl_mint": "npx esrun ./cluster1/spl_mint.ts",
     "spl_transfer": "npx esrun ./cluster1/spl_transfer.ts",
     "spl_metadata": "npx esrun ./cluster1/spl_metadata.ts",
     "nft_image": "npx esrun ./cluster1/nft_image.ts",
     "nft_metadata": "npx esrun ./cluster1/nft_metadata.ts",
-    "nft_mint": "npx esrun ./cluster1/nft_mint.ts"
+    "nft_mint": "npx esrun ./cluster1/nft_mint.ts",
+    "vault_init": "npx esrun ./cluster1/vault_init.ts",
+    "vault_deposit": "npx esrun ./cluster1/vault_deposit.ts",
+    "vault_withdraw": "npx esrun ./cluster1/vault_withdraw.ts",
+    "vault_deposit_spl": "npx esrun ./cluster1/vault_deposit_spl.ts",
+    "vault_withdraw_spl": "npx esrun ./cluster1/vault_withdraw_spl.ts",
+    "vault_deposit_nft": "npx esrun ./cluster1/vault_deposit_nft.ts",
+    "vault_withdraw_nft": "npx esrun ./cluster1/vault_withdraw_nft.ts",
+    "vault_close": "npx esrun ./cluster1/vault_close.ts"
   },
   "dependencies": {
-    "@coral-xyz/anchor": "0.29.0",
     "@digitak/esrun": "^3.2.25",
     "@metaplex-foundation/mpl-token-metadata": "^3.1.1",
     "@metaplex-foundation/umi-bundle-defaults": "^0.8.10",
     "@metaplex-foundation/umi-uploader-bundlr": "^0.8.10",
     "@metaplex-foundation/umi-web3js-adapters": "^0.8.10",
     "@solana-developers/node-helpers": "^1.2.1",
+    "@coral-xyz/anchor": "0.29.0",
+    "@metaplex-foundation/umi": "^0.8.10",
     "@solana/spl-token": "^0.3.9",
     "@solana/web3.js": "^1.87.6",
     "@types/node": "^20.9.3",
@@ -36,6 +45,6 @@
   },
   "type": "module",
   "devDependencies": {
-    "ts-node": "^10.9.1"
+    "npx esrun": "^10.9.1"
   }
 }
