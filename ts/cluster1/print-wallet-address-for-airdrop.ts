@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 dotenv.config();
 const log = console.log;
 
-const keypair = await getKeypairFromEnvironment("DEV_WALLET");
+const devWallet = await getKeypairFromEnvironment("DEV_WALLET");
+const wbaWallet = await getKeypairFromEnvironment("WBA_WALLET");
 
-log(`Wallet address is:`, keypair.publicKey.toBase58());
+log(`Dev wallet address is:`, devWallet.publicKey.toBase58());
+log(`WBA wallet address is:`, wbaWallet.publicKey.toBase58());
