@@ -1,0 +1,20 @@
+[toolchain]
+
+[features]
+# If we don't want to show seeds in IDL
+# seeds = false
+seeds = true
+skip-lint = false
+
+[programs.localnet]
+escrow = "Hh2kzENRayrRsGJz2eUumxtATkBCTgAu3N5R7SrCcmvG"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "/Users/mikemaccana/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
