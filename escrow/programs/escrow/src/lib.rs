@@ -16,18 +16,20 @@ pub const PUBKEY_BYTES: usize = 32;
 pub mod escrow {
     use super::*;
 
-    pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
+    // Make an Offer instance
+    pub fn initialize(ctx: Context<InitializeOptions>) -> Result<()> {
         Ok(())
     }
 }
 
-// Initialize is the method to make an Offer instance
-// even though it's a struct, it's where we add the constraints for the Initialize instruction
+
+// Was called "Initialize"
+// The constraints for the Initialize instruction
 // info is just a name we're giving for the lifetime
 // but info is the convention to name the lifetime for Anchor
 // under the hood we have 'account info' and 'account meta'
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct InitializeOptions<'info> {
     // We can use the Signer macro or the Signer type
     // both do the validation - the #[account] macros are the constraint
     // #[account(mut Signer)]
@@ -82,7 +84,7 @@ pub struct Initialize<'info> {
 
 // because Initialize uses <'info>
 // we have to specify it - twice!
-impl <'info> Initialize<'info>  {
+impl <'info> InitializeOptions<'info>  {
     
 }
 
