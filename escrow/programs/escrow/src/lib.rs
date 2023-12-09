@@ -23,7 +23,7 @@ pub mod mikes_cool_escrow {
     // Deposits an asset (of whatever token mint)
     // Requests an amount of a particular token mint  
 
-    // TODO: why is data a u64 int? Wouldn't it be an array of u64s?
+    
     pub fn makeOffer(
         context: Context<MakeOfferAccountConstraints>, 
         id: u64, 
@@ -59,15 +59,39 @@ pub mod mikes_cool_escrow {
 
     }
 
+    
+
+    pub fn refundOffer(
+        context: Context<RefundOfferAccountConstraints>
+    ) -> Result<()> {
+
+        // Release the tokens to our vault account
+        let transfer_accounts = Transfer {
+            from: context.accounts.vault.to_account_info(),
+            to: context.accounts.maker_token_account.to_account_info(),
+            authority: context.accounts.offer.to_account_info()
+        };
+
+        let signer_seeds = [
+            &[
+                b"offer",
+                context.accounts.maker.to_account_info().key().as_ref(),
+                context.accounts.offer.id.to_le_bytes().as_ref()
+            ][..]
+        ];
+        let cpi_context = CpiContext::new_with_signer(
+            context.accounts.token_program.to_account_info(), 
+            transfer_accounts,
+            &signer_seeds
+        );
+        
+        transfer(cpi_context, context.accounts.vault.amount);
+
+    }
+
     // Whoever signs this is the 'taker'
     // Taker deposits assets (is that in the same transaction)
-
-    // TODO: does taker run TokenProgram.transfer or an instruction from this program?
-    // pub fn takeOffer(context: Context<TakeOfferConstraints>) -> Result<()> {
-    //     Ok(())
-    // }
-
-    // pub fn refundOffer(context: Context<RefundOfferConstraints>) -> Result<()> {
+    // pub fn takeOffer(context: Context<TakeConstraints>) -> Result<()> {
     //     Ok(())
     // }
 }
@@ -89,13 +113,13 @@ pub struct MakeOfferAccountConstraints<'info> {
     //
     // Signer type allows any account to be able to sign (including program accounts)
     #[account(mut)]
-    pub maker: Signer<'info>,
+    maker: Signer<'info>,
 
     // The currencies we're swapping
     // Was called 'mint_a'
-    pub offer_token: Account<'info, Mint>,
+    offer_token: Account<'info, Mint>,
     // Was called 'mint_b'
-    pub desired_token: Account<'info, Mint>,
+    desired_token: Account<'info, Mint>,
 
     // WMakeOffer() will transfer the balance out of the Makers ATA account
     // Was 'maker_ata_a'
@@ -105,7 +129,7 @@ pub struct MakeOfferAccountConstraints<'info> {
         associated_token::mint = offer_token,
         associated_token::authority = maker
     )] 
-    pub maker_token_account: Account<'info, TokenAccount>,
+    maker_token_account: Account<'info, TokenAccount>,
 
     // Was calld 'Escrow'
     #[account(
@@ -114,12 +138,12 @@ pub struct MakeOfferAccountConstraints<'info> {
         space = Offer::INIT_SPACE,
         seeds = [
             b"offer", 
-            maker.key().as_ref()
-            id.to_le_bytes().as_ref()
+            maker.key().as_ref(),
+            offer.id.to_le_bytes().as_ref(),
         ],
         bump
     )]
-    pub offer: Account<'info, Offer>,
+    offer: Account<'info, Offer>,
 
     // Where we transfer tokens to while we wait for the offer to be taken or refunded
     #[account(
@@ -133,23 +157,57 @@ pub struct MakeOfferAccountConstraints<'info> {
         token::mint = offer_token,
         token::authority = offer
     )]
-    pub vault: Account<'info, TokenAccount>,
-
-    
-
-    // Dean style above, Richard style below
-    // pub offer: Account<'info, Offer>,
-    //     #[account(
-    //     init_if_needed,
-    //     payer = maker,
-    //     associated_token::mint = offer_token,
-    //     associated_token::authority = auth
-    // )]
+    vault: Account<'info, TokenAccount>,
 
     // Program just means an account that is executable
-    pub system_program: Program<'info, System>,
-    pub token_program: Program<'info, Token>,
-    pub associated_token_program: Program<'info, AssociatedToken>,
+    system_program: Program<'info, System>,
+    token_program: Program<'info, Token>,
+    associated_token_program: Program<'info, AssociatedToken>,
+}
+
+#[derive(Accounts)]
+pub struct RefundOfferAccountConstraints<'info> {
+    #[account(mut)]
+    maker: Signer<'info>,
+    offer_token: Account<'info, Mint>,
+
+    // We'll refund to the maker token account
+    #[account(
+        mut,
+        associated_token::mint = offer_token,
+        associated_token::authority = maker
+    )]
+    maker_token_account: Account<'info, TokenAccount>,
+
+    // We'll close the offer account
+    #[account(
+        mut,
+        close = maker,
+        seeds = [
+            b"offer", 
+            maker.key().as_ref(),
+            offer.id.to_le_bytes().as_ref(),
+        ],
+        bump  
+    )]
+    offer: Account<'info, Offer>,
+
+    // We'll empty the vault
+    #[account(
+        seeds = [
+            b"vault", 
+            offer.key().as_ref(),
+        ],
+        bump = offer.vault_bump,
+        token::mint = offer_token,
+        token::authority = offer
+    )]  
+    vault: Account<'info, TokenAccount>,
+
+    // Program just means an account that is executable
+    system_program: Program<'info, System>,
+    token_program: Program<'info, Token>,
+    associated_token_program: Program<'info, AssociatedToken>,
 }
 
 
