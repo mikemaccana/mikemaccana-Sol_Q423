@@ -24,14 +24,18 @@ pub mod mikes_cool_escrow {
     // Requests an amount of a particular token mint  
 
     
-    pub fn makeOffer(
+    pub fn make_offer(
         context: Context<MakeOfferAccountConstraints>, 
-        id: u64, 
-        // Was Deposit
+        // Was 'Deposit'
         deposit_amount: u64,
-        // Was Receive
+        // Was 'Receive'
         desired_amount: u64
     ) -> Result<()> {
+
+        // make a variable 'id' set from the unix timestamp
+        // We'll use this to identify the offer
+        // TODO: same account makes an offer at the same time
+        let id: u64 = Clock::get()?.unix_timestamp as u64;
 
         // Set the values for an Offer account (which will hold details of this offer)
         // set_inner() saves us from having to do context.accounts.offer.a = a, b = b etc. since we can just use a Struct
@@ -55,13 +59,13 @@ pub mod mikes_cool_escrow {
             context.accounts.token_program.to_account_info(), 
             transfer_accounts
         );
-         transfer(cpi_context, deposit_amount);
+        transfer(cpi_context, deposit_amount)
 
     }
 
     
 
-    pub fn refundOffer(
+    pub fn refund_offer(
         context: Context<RefundOfferAccountConstraints>
     ) -> Result<()> {
 
@@ -72,12 +76,14 @@ pub mod mikes_cool_escrow {
             authority: context.accounts.offer.to_account_info()
         };
 
-        let signer_seeds = [
+        // See https://drive.google.com/file/d/1mr5iCSisJNnDmZryyHE7n_BXg6FViwzE/view 
+        // 55m42s
+        let signer_seeds: [&[&[u8]]; 1] = [
             &[
                 b"offer",
-                context.accounts.maker.to_account_info().key().as_ref(),
-                context.accounts.offer.id.to_le_bytes().as_ref()
-            ][..]
+                context.accounts.maker.to_account_info().key.as_ref(),
+                &context.accounts.offer.id.to_le_bytes()[..]
+            ]
         ];
         let cpi_context = CpiContext::new_with_signer(
             context.accounts.token_program.to_account_info(), 
@@ -85,7 +91,7 @@ pub mod mikes_cool_escrow {
             &signer_seeds
         );
         
-        transfer(cpi_context, context.accounts.vault.amount);
+        transfer(cpi_context, context.accounts.vault.amount)
 
     }
 
@@ -138,8 +144,8 @@ pub struct MakeOfferAccountConstraints<'info> {
         space = Offer::INIT_SPACE,
         seeds = [
             b"offer", 
-            maker.key().as_ref(),
-            offer.id.to_le_bytes().as_ref(),
+            maker.key().as_ref(),  
+            id.to_le_bytes().as_ref(),
         ],
         bump
     )]
@@ -209,17 +215,6 @@ pub struct RefundOfferAccountConstraints<'info> {
     token_program: Program<'info, Token>,
     associated_token_program: Program<'info, AssociatedToken>,
 }
-
-
-// because MakeOfferAccountConstraints uses <'info>
-// we have to specify it - twice!
-
-// TODO: why are we implementing methods on our constraints?
-impl <'info> MakeOfferAccountConstraints<'info>  {
-    
-}
-
-
 
 // Gives us all our serialization / deserialization traits
 #[account]
