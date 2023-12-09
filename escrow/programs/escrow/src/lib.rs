@@ -1,6 +1,5 @@
-// See https://wonderful-stock-089.notion.site/Maker-Taker-Escrow-In-Plain-English-3ac1c043a5a4432698125050787e3eb7
 // See https://www.anchor-lang.com/docs/account-constraints#spl-constraints
-
+// See https://drive.google.com/file/d/1mr5iCSisJNnDmZryyHE7n_BXg6FViwzE/view
 use anchor_lang::prelude::*;
 use anchor_spl::{token::{Mint, TokenAccount, Token}, associated_token::AssociatedToken};
 
@@ -46,7 +45,7 @@ pub mod mikes_cool_escrow {
         });
 
 
-        // SSend some tokens to our vault account
+        // Send some tokens to our vault account
         let transfer_accounts = Transfer {
             from: context.accounts.maker_token_account.to_account_info(),
             to: context.accounts.vault.to_account_info(),
@@ -151,37 +150,10 @@ pub struct MakeOfferAccountConstraints<'info> {
     pub system_program: Program<'info, System>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
-    
-    // Richard style below
-    // Used by program to sign
-    // This is unique for every offer, so if one auth_key is compromised
-    // other offers are not compromised. 
-    // Only this program can sign with this program ID 
-    /// CHECK: insert reason that I am not a bad person
-    // #[account(seeds=[b"auth", offer.key().as_ref()], bump)]
-    // pub auth_key: UncheckedAccount<'info>,
-
-    // // key() function is better than key property for various reasons!
-    // // we use 'le' as convention (also x64 is little endian)
-    // #[account(
-    //     init, 
-    //     payer=signer, 
-    //     seeds=[
-    //         b"auth", 
-    //         maker.key().as_ref(), 
-    //         id.to_le_SIZE().as_ref()
-    //     ], 
-    //     bump, 
-    //     space=Offer::INIT_SPACE)
-    // ]
-    
-    
-
-    
 }
 
 
-// because Initialize uses <'info>
+// because MakeOfferAccountConstraints uses <'info>
 // we have to specify it - twice!
 
 // TODO: why are we implementing methods on our constraints?
