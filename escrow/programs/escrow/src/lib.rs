@@ -1,7 +1,10 @@
 // See https://www.anchor-lang.com/docs/account-constraints#spl-constraints
 // See https://drive.google.com/file/d/1mr5iCSisJNnDmZryyHE7n_BXg6FViwzE/view
 use anchor_lang::prelude::*;
-use anchor_spl::{token::{Mint, TokenAccount, Token}, associated_token::AssociatedToken};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{Mint, Token, TokenAccount},
+};
 
 // 'anchor sync' to update
 declare_id!("Hh2kzENRayrRsGJz2eUumxtATkBCTgAu3N5R7SrCcmvG");
@@ -11,25 +14,23 @@ pub const U8_SIZE: usize = 1;
 pub const U64_SIZE: usize = 8;
 pub const PUBKEY_SIZE: usize = 32;
 
-
 #[program]
 pub mod mikes_cool_escrow {
-    use anchor_spl::token::{Transfer, transfer};
     use super::*;
+    use anchor_spl::token::{transfer, Transfer};
 
     // Make an Offer instance
     // Was called Initialize
     // Whoever signs this is the 'maker'
     // Deposits an asset (of whatever token mint)
-    // Requests an amount of a particular token mint  
+    // Requests an amount of a particular token mint
     pub fn make_offer(
-        context: Context<MakeOfferAccountConstraints>, 
+        context: Context<MakeOfferAccountConstraints>,
         // Was 'Deposit'
         deposit_amount: u64,
         // Was 'Receive'
-        desired_amount: u64
+        desired_amount: u64,
     ) -> Result<()> {
-
         // make a variable 'id' set from the unix timestamp
         // We'll use this to identify the offer
         // TODO: same account makes an offer at the same time
@@ -43,56 +44,47 @@ pub mod mikes_cool_escrow {
             desired_token: context.accounts.desired_token.key(),
             desired_amount,
             bump: context.bumps.offer,
-            vault_bump: context.bumps.vault
+            vault_bump: context.bumps.vault,
         });
-
 
         // Send some tokens to our vault account
         let transfer_accounts = Transfer {
             from: context.accounts.maker_token_account.to_account_info(),
             to: context.accounts.vault.to_account_info(),
-            authority: context.accounts.maker.to_account_info()
+            authority: context.accounts.maker.to_account_info(),
         };
         let cpi_context = CpiContext::new(
-            context.accounts.token_program.to_account_info(), 
-            transfer_accounts
+            context.accounts.token_program.to_account_info(),
+            transfer_accounts,
         );
         transfer(cpi_context, deposit_amount)
-
     }
 
-    
-
-    pub fn refund_offer(
-        context: Context<RefundOfferAccountConstraints>
-    ) -> Result<()> {
+    pub fn refund_offer(context: Context<RefundOfferAccountConstraints>) -> Result<()> {
+        // See https://drive.google.com/file/d/1mr5iCSisJNnDmZryyHE7n_BXg6FViwzE/view
+        // 55m42s
+        let signer_seeds: [&[&[u8]]; 1] = [&[
+            b"offer",
+            context.accounts.maker.to_account_info().key.as_ref(),
+            &context.accounts.offer.id.to_le_bytes()[..],
+        ]];
 
         // Release the tokens to our vault account
         let transfer_accounts = Transfer {
             from: context.accounts.vault.to_account_info(),
             to: context.accounts.maker_token_account.to_account_info(),
-            authority: context.accounts.offer.to_account_info()
+            authority: context.accounts.offer.to_account_info(),
         };
 
-        // See https://drive.google.com/file/d/1mr5iCSisJNnDmZryyHE7n_BXg6FViwzE/view 
-        // 55m42s
-        let signer_seeds: [&[&[u8]]; 1] = [
-            &[
-                b"offer",
-                context.accounts.maker.to_account_info().key.as_ref(),
-                &context.accounts.offer.id.to_le_bytes()[..]
-            ]
-        ];
         let cpi_context = CpiContext::new_with_signer(
-            context.accounts.token_program.to_account_info(), 
+            context.accounts.token_program.to_account_info(),
             transfer_accounts,
-            &signer_seeds
+            &signer_seeds,
         );
-        
+
         transfer(cpi_context, context.accounts.vault.amount)?;
 
         Ok(())
-
     }
 
     // Whoever signs this is the 'taker'
@@ -101,7 +93,6 @@ pub mod mikes_cool_escrow {
     //     Ok(())
     // }
 }
-
 
 // Was called "Initialize"
 // The constraints for the Initialize instruction
@@ -129,12 +120,12 @@ pub struct MakeOfferAccountConstraints<'info> {
 
     // WMakeOffer() will transfer the balance out of the Makers ATA account
     // Was 'maker_ata_a'
-    // Add account constraints to ensure we can change it, and the account matches offer_token 
+    // Add account constraints to ensure we can change it, and the account matches offer_token
     #[account(
         mut,
         associated_token::mint = offer_token,
         associated_token::authority = maker
-    )] 
+    )]
     maker_token_account: Account<'info, TokenAccount>,
 
     // Was calld 'Escrow'
@@ -207,7 +198,7 @@ pub struct RefundOfferAccountConstraints<'info> {
         bump = offer.vault_bump,
         token::mint = offer_token,
         token::authority = offer
-    )]  
+    )]
     vault: Account<'info, TokenAccount>,
 
     // Program just means an account that is executable
@@ -220,7 +211,7 @@ pub struct RefundOfferAccountConstraints<'info> {
 #[account]
 // Was called Escrow
 pub struct Offer {
-    // Identifier 
+    // Identifier
     // Was called Seed
     // No need for pub as we will be using methods in impl
     id: u64,
@@ -239,20 +230,19 @@ pub struct Offer {
     // Person making offer
     // maker: Pubkey,
 
-    // Faster to not have to recalculate the bumps 
+    // Faster to not have to recalculate the bumps
     bump: u8,
-    vault_bump: u8 
-} 
+    vault_bump: u8,
+}
 
-// Make space for the Offer/Escrow 
+// Make space for the Offer/Escrow
 impl Space for Offer {
     // ANCHOR DISCRUMINATOR is always 8 bytes
     // 8 bytes for the u64 = 64 bits is 8 bytes
     // 32 for every pubkey
     // u8s are 1 bytes
     // TODO: can    I use sizeOf() or similar?
-    const INIT_SPACE: usize = 
-        ANCHOR_DISCRIMINATOR_SIZE 
+    const INIT_SPACE: usize = ANCHOR_DISCRIMINATOR_SIZE 
         + 1 * U64_SIZE // id
         + 2 * PUBKEY_SIZE // offer_token, desired_token
         + 1 * U64_SIZE // desired_amount
