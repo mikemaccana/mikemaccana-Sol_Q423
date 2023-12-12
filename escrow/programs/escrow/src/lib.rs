@@ -17,7 +17,7 @@ pub const PUBKEY_SIZE: usize = 32;
 #[program]
 pub mod mikes_cool_escrow {
     use super::*;
-    use anchor_spl::token::{transfer, Transfer};
+    use anchor_spl::token::{close_account, transfer, CloseAccount, Transfer};
 
     // Make an Offer instance
     // Was called Initialize
@@ -84,7 +84,19 @@ pub mod mikes_cool_escrow {
 
         transfer(cpi_context, context.accounts.vault.amount)?;
 
-        Ok(())
+        // Was 'close_accounts'
+        let accounts_for_close_instruction = CloseAccount {
+            account: context.accounts.vault.to_account_info(),
+            destination: context.accounts.maker.to_account_info(),
+            authority: context.accounts.offer.to_account_info(),
+        };
+
+        let cpi_context = CpiContext::new_with_signer(
+            context.accounts.token_program.to_account_info(),
+            accounts_for_close_instruction,
+            &signer_seeds,
+        );
+        close_account(cpi_context)
     }
 
     // Whoever signs this is the 'taker'
