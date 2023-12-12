@@ -1,0 +1,26 @@
+# User Stories for Certainty (someone called this 'RWA Wallet' though that's not accurate)
+
+## User story 1 (requester)
+
+As _someone that wants to send SOL/tokens to someone they already know in person_, I wish to _confirm the real-world identity of a wallet address_, so that _I can send SOL/token to the right person_.
+
+Further rationale:
+
+- Wallet transfers are not refundable
+- Scams and fraud are common on blockchains
+- Anyone can register any ANS/SNS name on Solana, meaning wallet names do not guarantee identity
+- Existing web2 banking apps often confirm the name of an account holder to recipients based on an account and routing number, so it is reasonable to expect the same on any modern payments system.
+
+Acceptance criteria:
+
+- The revealer must be able to accept or decline the request
+- If the revealer accepts the request I must see useful data that helps me know the identity of the revealer.
+
+## User story 2 (revealer)
+
+As _someone that wishes to recieve money_, I _want to be able to assure a contact that a wallet address is actually me_. Additionally, I don't want to reveal this information publicly, but only to the requester, as I do not wish to have the value and contents of my wallet tied to my identity.
+
+Acceptance criteria:
+
+- I may be able to decline the request
+- If I accept the request my identity must only be revealed to the requester, rather than to the public.
