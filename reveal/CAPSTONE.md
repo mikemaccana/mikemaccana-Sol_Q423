@@ -11,6 +11,8 @@ There are two roles in this transaction:
 - Requester - wishes to know revealers identity
 - Revealer - may wish to reveal their identity, but if so, only toi the requester
 
+Step 0: requester sends the URL for the reveal server to the revealer
+
 Step 1: [deliberately implemented in a basic way for Capstone] a revealer POSTs their own pubkey and requester pubkey to a non-blockchain server. The server looks up stored identity information, and if found, sends the revealer a serialised TX using the same mechanism as Solana Pay (details of the TX in next step).
 
 https://github.com/solana-labs/solana-pay/blob/master/SPEC.md#post-response
