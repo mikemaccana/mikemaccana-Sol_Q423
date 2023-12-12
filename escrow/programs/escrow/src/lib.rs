@@ -147,7 +147,7 @@ pub struct MakeOfferAccountConstraints<'info> {
         space = Offer::INIT_SPACE,
         seeds = [
             b"offer", 
-            maker.key().as_ref(),  
+            maker.key().as_ref(),
             id.to_le_bytes().as_ref(),
         ],
         bump
@@ -160,7 +160,7 @@ pub struct MakeOfferAccountConstraints<'info> {
         payer = maker,
         seeds = [
             b"vault", 
-            offer.key().as_ref() 
+            offer.key().as_ref()
         ],
         bump,
         token::mint = offer_token,
@@ -197,7 +197,7 @@ pub struct RefundOfferAccountConstraints<'info> {
             maker.key().as_ref(),
             offer.id.to_le_bytes().as_ref(),
         ],
-        bump  
+        bump
     )]
     offer: Account<'info, Offer>,
 
@@ -254,7 +254,7 @@ impl Space for Offer {
     // 32 for every pubkey
     // u8s are 1 bytes
     // TODO: can    I use sizeOf() or similar?
-    const INIT_SPACE: usize = ANCHOR_DISCRIMINATOR_SIZE 
+    const INIT_SPACE: usize = ANCHOR_DISCRIMINATOR_SIZE
         + 1 * U64_SIZE // id
         + 2 * PUBKEY_SIZE // offer_token, desired_token
         + 1 * U64_SIZE // desired_amount
