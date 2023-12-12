@@ -22,8 +22,6 @@ pub mod mikes_cool_escrow {
     // Whoever signs this is the 'maker'
     // Deposits an asset (of whatever token mint)
     // Requests an amount of a particular token mint  
-
-    
     pub fn make_offer(
         context: Context<MakeOfferAccountConstraints>, 
         // Was 'Deposit'
@@ -91,7 +89,9 @@ pub mod mikes_cool_escrow {
             &signer_seeds
         );
         
-        transfer(cpi_context, context.accounts.vault.amount)
+        transfer(cpi_context, context.accounts.vault.amount)?;
+
+        Ok(())
 
     }
 
