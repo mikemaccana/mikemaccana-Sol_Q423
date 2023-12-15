@@ -25,7 +25,21 @@ mod certainty {
         // Get a unix timestamp
         let timestamp = Clock::get()?.unix_timestamp;
 
+        // TODO: this data should come from a PDA provided by an oracle
+        // hacking this for the purposes of MVP
+        let hackStoredIdentity: BTreeMap<Pubkey, VerifiedCredentials> = BTreeMap::new();
+        let steve = VerifiedCredentials {
+            given_name: "Steve".to_string(),
+            family_name: "Smith".to_string(),
+        };
+        hackStoredIdentity.insert(revealer_pubkey, steve);
+
+        let found_identity = hackStoredIdentity
+            .get(&revealer_pubkey)
+            .ok_or(RevealError::IdentityUnknownError)?;
+
         // Make a PDA based on the timestamp
+        // TODO: Save the bump
         let (pda, _nonce) = Pubkey::find_program_address(
             &[
                 &requester_pubkey.to_bytes(),
@@ -35,24 +49,26 @@ mod certainty {
             &id(),
         );
 
-        // TODO: this data should come from a PDA
-        // provided by an oracle
-        let mut identity_data = BTreeMap::new();
-        identity_data.insert(revealer_pubkey, "Steve");
+        // TODO: can't set data on an address.
+        // set data to what's inside the address
+        let individually_revealed_identity = &mut context.accounts.individually_revealed_identity;
+        individually_revealed_identity.given_name = found_identity.given_name;
+        individually_revealed_identity.family_name = found_identity.family_name;
 
-        let identity = identity_data
-            .get(&revealer_pubkey)
-            .ok_or(RevealError::IdentityUnknownError)?;
-
-        // TODO: Save the bump
-
-        unimplemented!()
+        Ok(())
     }
 }
 
 // Validate incoming accounts for instructions
 #[derive(Accounts)]
 pub struct RevealAccountConstraints<'info> {
+    #[account(
+        init,
+        seeds = [requester_pubkey.as_bytes(), revealer_pubkey.key().as_ref()],
+        bump,
+        payer = initializer,
+        space = 8 + 32 + 1 + 4 + title.len() + 4 + description.len()
+    )]
     #[account()]
     pub requester: AccountInfo<'info>,
 
@@ -60,4 +76,10 @@ pub struct RevealAccountConstraints<'info> {
     pub revealer: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
+}
+
+#[account]
+pub struct VerifiedCredentials {
+    pub given_name: String,
+    pub family_name: String,
 }
