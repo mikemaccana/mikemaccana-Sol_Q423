@@ -1,6 +1,6 @@
-use anchor_lang::prelude::*;
-
 use crate::constants::{ANCHOR_DISCRIMINATOR_SIZE, PUBKEY_SIZE, U64_SIZE, U8_SIZE};
+
+use anchor_lang::prelude::*;
 
 // Gives us all our serialization / deserialization traits
 #[account]

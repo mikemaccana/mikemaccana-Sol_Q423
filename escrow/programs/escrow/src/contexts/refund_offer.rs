@@ -1,4 +1,13 @@
 use anchor_lang::prelude::*;
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{
+        close_account, spl_token::instruction::transfer, CloseAccount, Mint, Token, TokenAccount,
+        Transfer,
+    },
+};
+
+use crate::state::Offer;
 
 #[derive(Accounts)]
 pub struct RefundOfferAccountConstraints<'info> {
@@ -22,6 +31,7 @@ pub struct RefundOfferAccountConstraints<'info> {
     #[account(
         mut,
         close = maker,
+        has_one = offer_token,
         seeds = [
             b"offer", 
             maker.key().as_ref(),
