@@ -34,7 +34,7 @@ pub struct MakeOfferAccountConstraints<'info> {
     // Was called 'mint_b'
     pub desired_token: Account<'info, Mint>,
 
-    // WMakeOffer() will transfer the balance out of the Makers ATA account
+    // MakeOffer() will transfer the balance out of the Makers ATA account
     // Was 'maker_ata_a'
     // Add account constraints to ensure we can change it, and the account matches offer_token
     #[account(
