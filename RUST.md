@@ -31,7 +31,17 @@ because Solana has AccountInfo
 ## nearly every new anchor project needs anchor spl and init-if-needed
 
 What is InterfaceAccount again?
-
 The Token / Token22 future proofing
-
 init will make token22 accounts as needed
+
+WHAT AN INSTRUCTIONHANDLER LOOKS LIKE
+
+use anchor_lang::prelude::\*;
+
+```rust
+#[derive(Accounts)]
+pub struct DoThingAccountConstraints<'info> {
+    #[account(some options)]
+    pub someRoleName: Signer<'info>
+}
+```
