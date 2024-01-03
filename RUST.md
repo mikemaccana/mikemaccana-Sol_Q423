@@ -45,3 +45,18 @@ pub struct DoThingAccountConstraints<'info> {
     pub someRoleName: Signer<'info>
 }
 ```
+
+Check 'space' for sizes
+
+```rust
+close_account(
+    CpiContext::new_with_signer(
+        self.token_program.to_account_info(),
+        CloseAccount {
+            account: self.listing_vault.to_account_info(),
+            destination: self.lister.to_account_info(),
+            authority: self.listing.to_account_info(),
+        },
+    signer_seeds)
+);
+```
