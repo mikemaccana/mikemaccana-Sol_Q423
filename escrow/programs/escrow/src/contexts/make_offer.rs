@@ -16,7 +16,7 @@ use crate::state::Offer;
 // but info is the convention to name the lifetime for Anchor
 // under the hood we have 'account info' and 'account meta'
 // https://drive.google.com/file/d/1mr5iCSisJNnDmZryyHE7n_BXg6FViwzE/view
-// TODO: 27:44 in vieo - why are these Structs named like they are functions?
+// TODO: 27:44 in video - why are these Structs named like they are functions?
 #[derive(Accounts)]
 #[instruction(id: u64)]
 pub struct MakeOfferAccountConstraints<'info> {
@@ -47,7 +47,7 @@ pub struct MakeOfferAccountConstraints<'info> {
     // Was calld 'Escrow'
     #[account(
         init,
-        payer = maker,
+        payer = maker, 
         space = Offer::INIT_SPACE,
         seeds = [
             b"offer", 
@@ -101,7 +101,7 @@ impl<'info> MakeOfferAccountConstraints<'info> {
     // deposit_amount was 'Deposit'
     // desired_amount was 'Receive'
     // was 'saveEscrow'
-    pub fn saveOffer(
+    pub fn save_offer(
         &mut self,
         id: u64,
         desired_amount: u64,

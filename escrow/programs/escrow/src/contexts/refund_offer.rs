@@ -1,10 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{
-        close_account, spl_token::instruction::transfer, CloseAccount, Mint, Token, TokenAccount,
-        Transfer,
-    },
+    token::{close_account, transfer, CloseAccount, Mint, Token, TokenAccount, Transfer},
 };
 
 use crate::state::Offer;
@@ -83,7 +80,7 @@ impl<'info> RefundOfferAccountConstraints<'info> {
             &signer_seeds,
         );
 
-        transfer(cpi_context, self.vault.amount);
+        transfer(cpi_context, self.vault.amount)
     }
 
     pub fn close_vault(&mut self) -> Result<()> {

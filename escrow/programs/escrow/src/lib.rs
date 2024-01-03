@@ -27,17 +27,20 @@ pub mod mikes_cool_escrow {
         context.accounts.deposit(deposit_amount)?;
         context
             .accounts
-            .saveOffer(id, desired_amount, &context.bumps)
-    }
-
-    pub fn refund_offer(context: Context<RefundOfferAccountConstraints>) -> Result<()> {
-        context.accounts.refund()?;
-        context.accounts.close_vault()
+            .save_offer(id, desired_amount, &context.bumps)
     }
 
     // Whoever signs this is the 'taker'
     // Taker deposits assets (is that in the same transaction)
     pub fn take_offer(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
-        Ok(())
+        // ? means exit immediately
+        context.accounts.send_desired_tokens_to_maker()?;
+        context.accounts.empty_vault()?;
+        context.accounts.close_vault()
+    }
+
+    pub fn refund_offer(context: Context<RefundOfferAccountConstraints>) -> Result<()> {
+        context.accounts.refund()?;
+        context.accounts.close_vault()
     }
 }
