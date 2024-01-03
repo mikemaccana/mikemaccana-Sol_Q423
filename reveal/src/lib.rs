@@ -1,18 +1,23 @@
-mod errors;
 use anchor_lang::prelude::*;
+mod errors;
 pub use errors::RevealError;
 use std::collections::BTreeMap;
 
 declare_id!("Hh2kzENRayrRsGJz2eUumxtATkBCTgAu3N5R7SrCcmvG");
 
+// 'instruction introspection'
+// start transaction
+// verify off chain
+// continue
+
 #[program]
-mod certainty {
+mod reveal {
 
     use super::*;
     pub fn reveal(
         context: Context<RevealAccountConstraints>,
         requester_pubkey: Pubkey,
-        revealer_pubkey: Pubkey,
+        // The revealer_pubkey is the signed the transaction
     ) -> Result<()> {
         // TODO: check that the revealer_pubkey is the signer
 
@@ -21,6 +26,8 @@ mod certainty {
 
         // TOOD: make a PDA for the reveal
         // uni timetsamp
+
+        let  revealer_pubkey
 
         // Get a unix timestamp
         let timestamp = Clock::get()?.unix_timestamp;
@@ -33,6 +40,7 @@ mod certainty {
             family_name: "Smith".to_string(),
         };
         hackStoredIdentity.insert(revealer_pubkey, steve);
+        // end of hack
 
         let found_identity = hackStoredIdentity
             .get(&revealer_pubkey)
@@ -60,6 +68,7 @@ mod certainty {
 }
 
 // Validate incoming accounts for instructions
+// Really, Accounts 
 #[derive(Accounts)]
 pub struct RevealAccountConstraints<'info> {
     #[account(
@@ -78,8 +87,4 @@ pub struct RevealAccountConstraints<'info> {
     pub system_program: Program<'info, System>,
 }
 
-#[account]
-pub struct VerifiedCredentials {
-    pub given_name: String,
-    pub family_name: String,
-}
+
