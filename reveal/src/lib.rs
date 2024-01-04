@@ -5,10 +5,6 @@ use std::collections::BTreeMap;
 
 declare_id!("Hh2kzENRayrRsGJz2eUumxtATkBCTgAu3N5R7SrCcmvG");
 
-// 'instruction introspection'
-// start transaction
-// verify off chain
-// continue
 
 #[program]
 mod reveal {
