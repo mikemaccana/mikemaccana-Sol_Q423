@@ -61,6 +61,8 @@ pub fn handler(context: Context<Initialize>) -> Result<()> {
     // 55m42s
     let offer = context.accounts.offer;
 
+    // Close the vault
+
     // TODO: understand what account_info is
     let token_program_account_info = context.accounts.token_program.to_account_info();
 
@@ -92,7 +94,7 @@ pub fn handler(context: Context<Initialize>) -> Result<()> {
         &[offer.bump],
     ]];
 
-    // Release the tokens to our vault account
+    // Empty the vault back to the maker
     let transfer_accounts = Transfer {
         from: vault_account_info,
         to: maker_offered_token_account_info,
@@ -104,7 +106,7 @@ pub fn handler(context: Context<Initialize>) -> Result<()> {
 
     transfer(cpi_context, vault.amount)?;
 
-    // Now close the vault
+    // Close the vault
     let signer_seeds: [&[&[u8]]; 1] = [&[
         b"offer",
         maker_account_info.key.as_ref(),

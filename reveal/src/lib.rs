@@ -110,10 +110,10 @@ pub struct Form8300SenderAccountConstraints<'info> {
     pub form8300_revealed_identity: Account<'info, Offer>,
 
     #[account()]
-    pub sender: AccountInfo<'info>,
+    pub sender: Account<'info>,
 
     #[account()]
-    pub recipient: AccountInfo<'info>,
+    pub recipient: Account<'info>,
 
     pub system_program: Program<'info, System>,
 }

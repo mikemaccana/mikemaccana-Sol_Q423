@@ -5,11 +5,12 @@ use anchor_spl::{
 };
 
 use crate::state::Offer;
-// Make an Offer instance
 
-// Whoever signs this is the 'maker'
-// Deposits an asset (of whatever token mint)
-// Requests an amount of a particular token mint
+// Make an Offer instance
+// _____________________________________________________
+// Whoever signs this is the 'maker' of the offer
+// Maker deposits an asset (of whatever token mint) they are offering to a vault
+// Maker specified amount and what token they desire
 
 #[derive(Accounts)]
 // Was called "Initialize"
@@ -49,8 +50,9 @@ pub struct MakeOfferAccountConstraints<'info> {
     #[account(
         init,
         payer = maker, 
-        // Per https://github.com/coral-xyz/anchor/pull/2346
-        space = Offer::INIT_SPACE,
+        // Per https://www.anchor-lang.com/docs/space see InitSpac
+        e
+        space = ANCHOR_DISCRIMINATOR_SIZE + Offer::INIT_SPACE,
         seeds = [
             b"offer", 
             maker.key().as_ref(),
