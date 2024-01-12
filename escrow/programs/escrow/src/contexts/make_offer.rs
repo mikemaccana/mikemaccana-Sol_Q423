@@ -44,10 +44,11 @@ pub struct MakeOfferAccountConstraints<'info> {
     )]
     pub maker_token_account: Account<'info, TokenAccount>,
 
-    // Was calld 'Escrow'
+    // Was called 'Escrow'
     #[account(
         init,
         payer = maker, 
+        // Per https://github.com/coral-xyz/anchor/pull/2346
         space = Offer::INIT_SPACE,
         seeds = [
             b"offer", 
