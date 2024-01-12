@@ -6,7 +6,7 @@ use anchor_spl::{
 };
 
 #[derive(Accounts)]
-pub struct RefundOfferAccountConstraints {
+pub struct RefundOfferAccountConstraints<'info> {
     #[account(mut)]
     maker: Signer<'info>,
 

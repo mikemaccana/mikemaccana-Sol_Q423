@@ -1,4 +1,7 @@
 use anchor_lang::prelude::*;
+use anchor_spl::{token::{Mint, TokenAccount, Token, Transfer, CloseAccount, transfer, close_account}, associated_token::AssociatedToken};
+
+use crate::state::Offer;
 #[derive(Accounts)]
 pub struct TakeOfferAccountConstraints<'info> {
     // Taker is the signer here
@@ -81,6 +84,7 @@ pub struct TakeOfferAccountConstraints<'info> {
 pub fn handler(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
 
     let offer = context.accounts.offer;    
+    let vault = context.accounts.vault;
 
     
     let token_program_account_info = context.accounts.token_program.to_account_info();
@@ -105,7 +109,7 @@ pub fn handler(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
         authority: taker_account_info,
     };
     let cpi_context = CpiContext::new(token_program_account_info, transfer_accounts);
-    transfer(cpi_context, self.offer.desired_amount)
+    transfer(cpi_context, offer.desired_amount)?;
 
     // Transfer offered tokens from vault to taker
     // Was 'withdraw'
@@ -131,7 +135,7 @@ pub fn handler(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
         &signer_seeds,
     );
 
-    transfer(cpi_context, self.vault.amount)
+    transfer(cpi_context, vault.amount)?;
 
     // Close the vault and ever speak of this again
     // Was 'withdraw'
@@ -139,13 +143,13 @@ pub fn handler(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
     // 55m42s
     let signer_seeds: [&[&[u8]]; 1] = [&[
         b"offer",
-        self.maker.to_account_info().key.as_ref(),
-        &self.offer.id.to_le_bytes()[..],
-        &[self.offer.bump],
+        maker_account_info.key.as_ref(),
+        &offer.id.to_le_bytes()[..],
+        &[offer.bump],
     ]];
 
     // Was 'close_accounts'
-    let accounts_for_close_instruction = CloseAccount {
+    let close_accounts_instruction = CloseAccount {
         account: vault_account_info,
         // Send vault rent back to taker
         destination: taker_account_info,
@@ -154,11 +158,10 @@ pub fn handler(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
 
     let cpi_context = CpiContext::new_with_signer(
         token_program_account_info,
-        accounts_for_close_instruction,
+        close_accounts_instruction,
         &signer_seeds,
     );
-    close_account(cpi_context)
-
+    close_account(cpi_context)?;
 
     Ok(())
 }

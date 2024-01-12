@@ -1,6 +1,7 @@
 # Mike's WBA repo
 
 program private keys are generated during deploy
+but aren't used after deploy since the update authority.
 
 ## `YourName_Sol_Q423`
 
@@ -41,9 +42,18 @@ Cloned from https://github.com/Web3-Builders-Alliance/solana-starter
 - We don't have ATAs - we are manually recording token account addresses, rather than just using mint to determine currencies involved, and sending to whatever the ATA is for that mint at that wallet address.
 - We add JS tests
 
-### Based Anchor - (https://github.com/deanmlittle/anchor-escrow-2023)
+### What changed in Based Anchor - (https://github.com/deanmlittle/anchor-escrow-2023)
 
-### Now
+Lol it's hard to tell with this opme because it's my .... default idea of what an Anchor project looks like.
+
+- Using ATAs now
+
+What I think would be good additions, that I tried in my own version:
+
+- Still focusing on contexts over instruction handlers
+- Not using the InitSpace macro
+
+###
 
 Older Anchor - account constraints (`/contexts` dir)
 

@@ -1,10 +1,9 @@
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{Mint, Token, TokenAccount, Transfer},
+    token::{transfer, Mint, Token, TokenAccount, Transfer},
 };
-
-use crate::state::Offer;
+use crate::{state::Offer, constants::ANCHOR_DISCRIMINATOR_SIZE};
 
 // Make an Offer instance
 // _____________________________________________________
@@ -12,7 +11,7 @@ use crate::state::Offer;
 // Maker deposits an asset (of whatever token mint) they are offering to a vault
 // Maker specified amount and what token they desire
 
-#[derive(Accounts)]
+
 // Was called "Initialize"
 // The constraints for the Initialize instruction
 // 'info is just a name we're giving for the lifetime
@@ -50,8 +49,7 @@ pub struct MakeOfferAccountConstraints<'info> {
     #[account(
         init,
         payer = maker, 
-        // Per https://www.anchor-lang.com/docs/space see InitSpac
-        e
+        // Per https://www.anchor-lang.com/docs/space see InitSpace
         space = ANCHOR_DISCRIMINATOR_SIZE + Offer::INIT_SPACE,
         seeds = [
             b"offer", 
@@ -117,7 +115,7 @@ pub fn handler(
         authority: maker_account_info,
     };
     let cpi_context = CpiContext::new(token_program_account_info, transfer_accounts);
-    transfer(cpi_context, deposit_amount)
+    transfer(cpi_context, deposit_amount);
 
     // make a variable 'id' set from the unix timestamp
     // We'll use this to identify the offer
@@ -132,8 +130,8 @@ pub fn handler(
         offer_token: offer_token.key(),
         desired_token: desired_token.key(),
         desired_amount,
-        bump: &MakeOfferAccountConstraintsBumps.offer,
-        vault_bump: &MakeOfferAccountConstraintsBumps.vault,
+        bump: &MakeOfferAccountConstraintsBumps::offer,
+        vault_bump: &MakeOfferAccountConstraintsBump::vault,
     })
 
     // TODO: Just double check Dean's code to make sure we're not missing anything at the end here
