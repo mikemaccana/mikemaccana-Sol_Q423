@@ -1,86 +1,119 @@
 use anchor_lang::prelude::*;
-mod errors;
-pub use errors::RevealError;
-use std::collections::BTreeMap;
 
 declare_id!("Hh2kzENRayrRsGJz2eUumxtATkBCTgAu3N5R7SrCcmvG");
-
 
 #[program]
 mod reveal {
 
     use super::*;
     pub fn reveal(
-        context: Context<RevealAccountConstraints>,
-        requester_pubkey: Pubkey,
-        // The revealer_pubkey is the signed the transaction
+        context: Context<Form8300SenderAccountConstraints>,
+        sender_pubkey: Pubkey,
+
+        first_name: String,
+        last_name: String,
+        middle_initial: String,
+
+        taxpayer_id: String,
+
+        address: String,
+        city: String,
+        state: String,
+        country: String,
+
+        occupation_profession_or_business: String,
+        date_of_birth: String,
+
+        identifying_document: String,
+        identifying_document_number: String,
+        identifying_document_issued_by: String,
     ) -> Result<()> {
-        // TODO: check that the revealer_pubkey is the signer
+        // We need to make the account first
 
-        // TODO: look up revealer's account
-        // TODO: encrypt revealer's identity information with ther requested pubkey
-
-        // TOOD: make a PDA for the reveal
-        // uni timetsamp
-
-        let  revealer_pubkey
-
+        // TODO: when does dean make the escrow accoint in make?
         // Get a unix timestamp
         let timestamp = Clock::get()?.unix_timestamp;
-
-        // TODO: this data should come from a PDA provided by an oracle
-        // hacking this for the purposes of MVP
-        let hackStoredIdentity: BTreeMap<Pubkey, VerifiedCredentials> = BTreeMap::new();
-        let steve = VerifiedCredentials {
-            given_name: "Steve".to_string(),
-            family_name: "Smith".to_string(),
-        };
-        hackStoredIdentity.insert(revealer_pubkey, steve);
-        // end of hack
-
-        let found_identity = hackStoredIdentity
-            .get(&revealer_pubkey)
-            .ok_or(RevealError::IdentityUnknownError)?;
 
         // Make a PDA based on the timestamp
         // TODO: Save the bump
         let (pda, _nonce) = Pubkey::find_program_address(
             &[
-                &requester_pubkey.to_bytes(),
-                &revealer_pubkey.to_bytes(),
+                &sender_pubkey.to_bytes(),
+                &sender_pubkey.to_bytes(),
                 &timestamp.to_le_bytes(),
             ],
             &id(),
         );
 
-        // TODO: can't set data on an address.
-        // set data to what's inside the address
-        let individually_revealed_identity = &mut context.accounts.individually_revealed_identity;
-        individually_revealed_identity.given_name = found_identity.given_name;
-        individually_revealed_identity.family_name = found_identity.family_name;
+        // Shove the data into the Account
+        context
+            .accounts
+            .form8300_revealed_identity
+            .set_inner(Form8300RevealedIdentity {
+                first_name: first_name,
+                last_name: last_name,
+                middle_initial: middle_initial,
+
+                taxpayer_id: taxpayer_id,
+
+                address: address,
+                city: city,
+                state: state,
+                country: country,
+
+                occupation_profession_or_business: occupation_profession_or_business,
+                date_of_birth: date_of_birth,
+
+                identifying_document: identifying_document,
+                identifying_document_number: identifying_document_number,
+                identifying_document_issued_by: identifying_document_issued_by,
+            });
 
         Ok(())
     }
 }
 
+#[account]
+#[derive(InitSpace)]
+pub struct Form8300RevealedIdentity {
+    pub first_name: string,
+    pub last_name: string,
+    pub middle_initial: string,
+
+    pub taxpayer_id: string,
+
+    pub address: string,
+    pub city: string,
+    pub state: string,
+    pub country: string,
+
+    pub occupation_profession_or_business: string,
+    pub date_of_birth: string,
+
+    pub identifying_document: string,
+    pub identifying_document_number: string,
+    pub identifying_document_issued_by: string,
+}
+
 // Validate incoming accounts for instructions
-// Really, Accounts 
+// Really, Accounts are just account constraints
 #[derive(Accounts)]
-pub struct RevealAccountConstraints<'info> {
+pub struct Form8300SenderAccountConstraints<'info> {
     #[account(
         init,
-        seeds = [requester_pubkey.as_bytes(), revealer_pubkey.key().as_ref()],
+        payer = sender,
+        seeds = [sender.key().as_bytes(), recipient.key().as_bytes(), &timestamp.to_le_bytes()],
         bump,
-        payer = initializer,
-        space = 8 + 32 + 1 + 4 + title.len() + 4 + description.len()
+        // Per https://github.com/coral-xyz/anchor/pull/2346
+        space = ANCHOR_DISCRIMINATOR_SIZE + Form8300RevealedIdentity::INIT_SPACE,
     )]
-    #[account()]
-    pub requester: AccountInfo<'info>,
+    pub form8300_revealed_identity: Account<'info, Offer>,
 
     #[account()]
-    pub revealer: AccountInfo<'info>,
+    pub sender: AccountInfo<'info>,
+
+    #[account()]
+    pub recipient: AccountInfo<'info>,
 
     pub system_program: Program<'info, System>,
 }
-
-

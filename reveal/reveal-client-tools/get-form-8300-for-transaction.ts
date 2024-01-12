@@ -20,3 +20,20 @@ const getNoteOrMemo = (
 
   return null;
 };
+
+// const form8300 = {
+//   revision: "December 2023",
+//   url: "https://www.irs.gov/pub/irs-pdf/f8300.pdf"
+//   items: [
+
+//   ]
+//   part1: {
+//     part: "I",
+//     name: "Identity of Individual From Whom the Cash Was Received",
+//     items: [
+//       {
+
+//       }
+//     ]
+//   }
+// };
