@@ -5,7 +5,7 @@ pub mod state;
 
 use anchor_lang::prelude::*;
 
-pub use instructions::{make_offer, refund_offer, take_offer};
+pub use instructions::*; // {make_offer, refund_offer, take_offer, MakeOfferAccountConstraints};
 
 declare_id!("8atVt41JaLmrLmCUgP8N9jEkc3KHwk5EV4AUYRxnqcix");
 
@@ -23,7 +23,7 @@ pub mod escrow_new {
     }
 
     pub fn take_offer(context: Context<TakeOfferAccountConstraints>) -> Result<()> {
-        take_offer::handler(context, amount)
+        take_offer::handler(context)
     }
 
     pub fn refund_offer(context: Context<RefundOfferAccountConstraints>) -> Result<()> {
