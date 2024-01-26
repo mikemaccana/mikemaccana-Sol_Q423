@@ -1,3 +1,3 @@
-pub mod initialize;
+pub mod reveal;
 
-pub use initialize::*;
+pub use reveal::*;
