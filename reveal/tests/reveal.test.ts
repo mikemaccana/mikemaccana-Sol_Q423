@@ -19,10 +19,19 @@ describe("reveal", async () => {
 
   test("reveal() function writes correct data to the chain", async () => {
     // encrypt the data
-
-    // const transactionSignature = await program.methods
-    //   .reveal(seed, new BN(1e6), new BN(1e6))
+    // await program.methods
+    //   .make(seed, new BN(1e6), new BN(1e6))
     //   .accounts({ ...accounts })
+    //   .signers([maker])
+    //   .rpc()
+    //   .then(confirm)
+    //   .then(log);
+
+    const thing = await program.methods.initialize();
+
+    log(`❤️❤️❤️❤️❤️❤️❤️❤️`);
+    log(thing);
+    // .accounts({ ...accounts })
     //   .signers([maker])
     //   .rpc();
 

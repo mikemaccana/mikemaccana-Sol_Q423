@@ -1,7 +1,7 @@
-use crate::state::Revelation;
+// use crate::state::Revelation;
 use anchor_lang::prelude::*;
 
-use crate::ANCHOR_DISCRIMINATOR_SIZE;
+// use crate::ANCHOR_DISCRIMINATOR_SIZE;
 
 // The account contraints also has access to the parameters of the instruction
 // In this case, that's where 'id' is set.
