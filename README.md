@@ -13,6 +13,10 @@ Cloned from https://github.com/Web3-Builders-Alliance/solana-starter
 
 [Capstone Architectural Diagram](https://whimsical.com/8300-reveal-architecture-diagram-GfD5WCPooLam6WZzb1YFAf)
 
+## Capstone is in Seperate Repo
+
+See [Reveal Repo](https://github.com/mikemaccana/reveal)
+
 ## Evolution of Programs on Solana
 
 ### What's consistent
@@ -52,9 +56,3 @@ What I think would be good additions, that I tried in my own version:
 
 - Still focusing on contexts over instruction handlers
 - Not using the InitSpace macro
-
-###
-
-Older Anchor - account constraints (`/contexts` dir)
-
-New Anchor - focus on instructions over account constraints (`/instructions` dir)
